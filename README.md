@@ -41,10 +41,15 @@ Obs: As vezes, durante o scaffolding, a classe Program é alterada e o Identity 
 
 ### Add Identity Pages to CRUD
 
-- Adicionar as páginas de identidade ao CRUD:
+
+### Add Todo Model scaffold razor pages
+
 ```
-dotnet aspnet-codegenerator razorpage -m IdentityRole -dc AdminNET.Data.ApplicationDbContext -udl -outDir Pages/Identity/Roles --referenceScriptLibraries
+cd src/AdminNET
+dotnet aspnet-codegenerator razorpage -m Todo -dc AdminNET.Data.ApplicationDbContext -udl -outDir Pages/Todos --referenceScriptLibraries
 ```
+
+
 
 ### Referencia 
 

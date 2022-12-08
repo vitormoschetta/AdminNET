@@ -1,4 +1,5 @@
 ﻿using AdminNET.Areas.Identity.Models;
+using AdminNET.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,4 +11,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         : base(options)
     {
     }
+
+    public DbSet<Todo> Todos { get; set; } = null!;
 }
