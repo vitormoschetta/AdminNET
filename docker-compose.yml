@@ -1,0 +1,35 @@
+version: '3'
+
+networks:
+  internal:
+    name: internal
+
+services:
+  db:
+    container_name: AdminNET.DB
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: AdminNET
+      POSTGRES_PASSWORD: Postgres@123
+      POSTGRES_DB: AdminNET
+    ports:
+      - 5434:5432
+    networks:
+      - internal 
+
+  app:
+    container_name: AdminNET.APP    
+    build:
+      context: .
+      dockerfile: Dockerfile    
+    ports:
+      - 8080:80
+    networks:
+      - internal
+    depends_on:
+      - db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Server=AdminNET.DB;Port=5432;Database=AdminNET;User Id=AdminNET;Password=Postgres@123;
