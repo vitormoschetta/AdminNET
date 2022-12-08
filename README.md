@@ -6,6 +6,17 @@ dotnet new webapp --auth Individual -o src/AdminNET
 ```
 
 
+### Personalizar classes de usuário e papel
+
+- Criar as classes ApplicationUser em src/AdminNET/Areas/Identity/Models, estendendo IdentityUser;
+- Alterar a classe ApplicationDbContext em src/AdminNET/Data/ApplicationDbContext, estendendo IdentityDbContext<ApplicationUser>;
+- Alterar a classe Program em src/AdminNET/Program, Adicionando o Identity com a classe personalizada ApplicationUser:
+``` 
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<ApplicationDbContext>();
+```
+
+
 ### Add Migration
 ```
 dotnet ef migrations add initial --project src/AdminNET/AdminNET.csproj -o Data/Migrations
@@ -13,26 +24,27 @@ dotnet ef migrations add initial --project src/AdminNET/AdminNET.csproj -o Data/
 
 
 ### Scaffold Identity Pages
-```
-dotnet aspnet-codegenerator identity -dc AdminNET.Data.ApplicationDbContext --files "Account.Register;Account.Login;Account.Logout;Account.Manage.Index;Account.Manage.ChangePassword" --project src/AdminNET/AdminNET.csproj
-```
-Ou, para gerar todas as páginas de identidade:
-```
-dotnet aspnet-codegenerator identity -dc AdminNET.Data.ApplicationDbContext --project src/AdminNET/AdminNET.csproj
-```
 
-
-### Personalizar classes de usuário e papel
-
-- Criar as classes ApplicationUser em src/AdminNET/Areas/Identity/Models, estendendo IdentityUser;
-- Alterar a classe ApplicationDbContext em src/AdminNET/Data/ApplicationDbContext, estendendo IdentityDbContext<ApplicationUser>;
-
-
+Páginas de identidade específicas:
 ```
-dotnet aspnet-codegenerator identity -dc AdminNET.Data.ApplicationDbContext --files "Account.Register;Account.Login;Account.Logout;Account.Manage.Index;Account.Manage.ChangePassword" --project src/AdminNET/AdminNET.csproj --userclass ApplicationUser --usernamespace AdminNET.Models --contextnamespace AdminNET.Data --contextdir Data --layout _Layout
+cd src/AdminNET
+dotnet aspnet-codegenerator identity -dc AdminNET.Data.ApplicationDbContext --files "Account.Register;Account.Login;Account.Logout;Account.Manage.Index;Account.Manage.ChangePassword"
 ```
 
+Todas as páginas de identidade:
+```
+dotnet aspnet-codegenerator identity -dc AdminNET.Data.ApplicationDbContext
+```
 
+Obs: As vezes, durante o scaffolding, a classe Program é alterada e o Identity é adicionado novamente, então é necessário remover o Identity e adicionar novamente com a classe ApplicationUser personalizada.
+
+
+### Add Identity Pages to CRUD
+
+- Adicionar as páginas de identidade ao CRUD:
+```
+dotnet aspnet-codegenerator razorpage -m IdentityRole -dc AdminNET.Data.ApplicationDbContext -udl -outDir Pages/Identity/Roles --referenceScriptLibraries
+```
 
 ### Referencia 
 
