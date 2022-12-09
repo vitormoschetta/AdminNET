@@ -49,10 +49,24 @@ namespace AdminNET.Api.Filters
                 }, out SecurityToken validatedToken);
 
                 var jwtToken = (JwtSecurityToken)validatedToken;
-                var userId = jwtToken.Claims.First(x => x.Type == "unique_name").Value;
+                var userId = jwtToken.Claims.First(x => x.Type == "nameid").Value;
+                var userEmail = jwtToken.Claims.First(x => x.Type == "email").Value;
+                var userRole = jwtToken.Claims.First(x => x.Type == "role").Value;
 
-                // attach user to context on successful jwt validation
                 var user = await _userManager.FindByIdAsync(userId);
+                if (user == null || user?.Email != userEmail)
+                {
+                    var reponseUnnauthorized = JsonSerializer.Serialize(new { message = "Unauthorized" });
+                    context.HttpContext.Response.StatusCode = 401;
+                    context.HttpContext.Response.ContentType = "application/json";
+                    await context.HttpContext.Response.WriteAsync(reponseUnnauthorized);
+                    return;
+                }
+
+                var roles = await _userManager.GetRolesAsync(user);
+
+                user.Roles = roles.Select(x => new ApplicationRole { Name = x }).ToList();
+
                 context.HttpContext.Items["User"] = user;
             }
             catch

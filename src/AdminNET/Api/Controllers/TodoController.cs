@@ -1,4 +1,5 @@
 using AdminNET.Api.Filters;
+using AdminNET.Areas.Identity.Models;
 using AdminNET.Data;
 using AdminNET.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -23,6 +24,8 @@ public class TodoController : ControllerBase
     [HttpGet]    
     public async Task<ActionResult<IEnumerable<Todo>>> GetTodos()
     {
+        var user = HttpContext.Items["User"] as ApplicationUser;
+
         return await _context.Todos.ToListAsync();
     }
 }
