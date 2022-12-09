@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace AdminNET.Pages.Todos
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "User,Admin")]
     public class DeleteModel : PageModel
     {
         private readonly AdminNET.Data.ApplicationDbContext _context;

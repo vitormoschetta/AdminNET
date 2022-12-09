@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace AdminNET.Pages.Todos
 {
-    [Authorize]
+    [Authorize(Roles = "User,Admin")]
     public class CreateModel : PageModel
     {
         private readonly AdminNET.Data.ApplicationDbContext _context;
