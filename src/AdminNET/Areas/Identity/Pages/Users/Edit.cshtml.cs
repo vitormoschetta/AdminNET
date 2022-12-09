@@ -12,20 +12,18 @@ namespace AdminNET.Areas.Identity.Pages.Users
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
-        private readonly IdentityUserRole<string> _userRole;
 
-        public EditModel(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, IdentityUserRole<string> userRole)
+        public EditModel(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
-            _userRole = userRole;
         }
 
         public class InputModel
         {
             public string Id { get; set; } = string.Empty;
             public string UserName { get; set; } = string.Empty;
-            public List<ApplicationRole> Roles { get; set; } = new List<ApplicationRole>();
+            public Dictionary<string, bool> Roles { get; set; } = new Dictionary<string, bool>();
         }
 
         [BindProperty]
@@ -49,10 +47,16 @@ namespace AdminNET.Areas.Identity.Pages.Users
                 Input.Id = user.Id;
                 Input.UserName = user.UserName ?? string.Empty;
 
-                var roles = await _userManager.GetRolesAsync(user);
-                var userRoles = await _roleManager.Roles.Where(r => roles.Contains(r.Name)).ToListAsync();
+                // get all roles
+                var roles = await _roleManager.Roles.ToListAsync();
 
-                Input.Roles = userRoles;
+                // get user roles
+                var userRoles = await _userManager.GetRolesAsync(user);
+
+                foreach (var role in roles)
+                {
+                    Input.Roles.Add(role.Name, userRoles.Contains(role.Name));
+                }
             }
 
             return Page();
@@ -73,9 +77,27 @@ namespace AdminNET.Areas.Identity.Pages.Users
                 return NotFound();
             }
 
-            user.UserName = Input.UserName;
+            await _userManager.RemoveFromRolesAsync(user, await _userManager.GetRolesAsync(user));
 
-           
+            var selectedRoles = Request.Form["checkRoles"].ToString();
+            var roles = selectedRoles.Split(',');
+
+            foreach (var role in roles)
+            {
+                var rolesUser = await _userManager.GetRolesAsync(user);
+
+                if (rolesUser.Contains(role))
+                {
+                    continue;
+                }
+
+                var roleToAdd = await _roleManager.FindByNameAsync(role);
+
+                if (roleToAdd != null)
+                {
+                   await _userManager.AddToRoleAsync(user, roleToAdd.Name);
+                }
+            }
 
             var result = await _userManager.UpdateAsync(user);
 
