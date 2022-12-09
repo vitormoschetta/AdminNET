@@ -6,5 +6,7 @@ namespace AdminNET.Areas.Identity.Models
     {
         public string Document { get; set; } = string.Empty;
         public string DocumentType { get; set; } = string.Empty;
+
+        public IList<ApplicationRole> Roles { get; set; } = new List<ApplicationRole>();
     }
 }
