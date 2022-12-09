@@ -12,11 +12,13 @@ namespace AdminNET.Api.Filters
     {
         private readonly ILogger<AuthFilter> _logger;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly string _key;
 
-        public AuthFilter(ILogger<AuthFilter> logger, UserManager<ApplicationUser> userManager)
+        public AuthFilter(ILogger<AuthFilter> logger, UserManager<ApplicationUser> userManager, IConfiguration configuration)
         {
             _logger = logger;
             _userManager = userManager;
+            _key = configuration["Jwt:Key"] ?? throw new ArgumentNullException(nameof(_key));
         }
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
@@ -35,7 +37,7 @@ namespace AdminNET.Api.Filters
             try
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Encoding.ASCII.GetBytes("This is a secret phrase");
+                var key = Encoding.ASCII.GetBytes(_key);
                 tokenHandler.ValidateToken(token, new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,

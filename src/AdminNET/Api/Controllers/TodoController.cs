@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AdminNET.Api.Controllers;
 
 [ApiController]
-[Route("todos")]
+[Route("api/todos")]
 [ServiceFilter(typeof(AuthFilter))]
 public class TodoController : ControllerBase
 {
