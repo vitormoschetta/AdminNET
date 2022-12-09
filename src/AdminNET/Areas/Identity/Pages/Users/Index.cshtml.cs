@@ -1,6 +1,7 @@
 using AdminNET.Areas.Identity.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,15 +17,28 @@ namespace AdminNET.Areas.Identity.Pages.Users
             _userManager = userManager;
         }
 
-        public IList<ApplicationUser> Users { get; set; } = new List<ApplicationUser>();
+        public class UserViewModel
+        {
+            public string Id { get; set; } = string.Empty;
+            public string UserName { get; set; } = string.Empty;
+            public IList<string> Roles { get; set; } = new List<string>();
+        }
+
+        [BindProperty]
+        public List<UserViewModel> Users { get; set; } = new List<UserViewModel>();
 
         public async Task OnGetAsync()
         {
-            Users = await _userManager.Users.ToListAsync();
+            var users = await _userManager.Users.ToListAsync();
 
-            foreach (var user in Users)
+            foreach (var user in users)
             {
-                var roles = await _userManager.GetRolesAsync(user);
+                Users.Add(new UserViewModel
+                {
+                    Id = user.Id,
+                    UserName = user.UserName ?? string.Empty,
+                    Roles = await _userManager.GetRolesAsync(user)
+                });
             }
         }
     }
