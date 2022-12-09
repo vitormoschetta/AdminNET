@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace AdminNET.Controllers;
+namespace AdminNET.Api.Controllers;
 
 [ApiController]
 [Route("authenticate")]
